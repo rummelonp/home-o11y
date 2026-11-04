@@ -1,0 +1,17 @@
+node_modules/
+.wrangler/
+.dev.vars*
+*.tsbuildinfo
+.DS_Store
+
+# デプロイ先ごとの値と、そこから合成した wrangler の設定（scripts/deploy-config.mjs）
+deploy.env
+wrangler.deploy.json
+# 初回のデプロイで --secrets-file に渡す secret
+deploy.secrets.env
+
+# AI エージェントの作業用ファイル
+.claude/plans/
+.claude/worktrees/
+.claude/settings.local.json
+.claude/launch.json

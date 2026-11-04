@@ -1,0 +1,33 @@
+// デプロイ先の値（D1 の database_id、デバイスの一覧）は deploy.env に置き、ここには書かない。
+// `pnpm deploy:remote` と `pnpm db:migrate:remote` は、この設定に deploy.env の値を重ねた
+// wrangler.deploy.json（gitignore 済み）を作って wrangler に渡す。
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "home-o11y",
+  "main": "src/index.ts",
+  // テストと wrangler dev が使う workerd の版より新しい日付にすると起動できない
+  "compatibility_date": "2026-11-03",
+  // Cron だけで動き、HTTP では何も受けない
+  "workers_dev": false,
+  "preview_urls": false,
+  // 失敗した発火のログを、tail を開いていない間も後から読むため
+  "observability": { "enabled": true },
+  // Cron Trigger は Workers の Free プランだとアカウント全体で 5 本まで
+  "triggers": { "crons": ["*/5 * * * *"] },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "home-o11y",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "vars": {
+    "MACKEREL_SERVICE": "home",
+    // 値は deploy.env か .dev.vars から入る。ここでは `wrangler types` に Env の項目を作らせるためだけに置く
+    "SWITCHBOT_DEVICES": ""
+  },
+  // `wrangler secret put` で入れる。`wrangler types` は .dev.vars からではなく、この一覧から Env の項目を作る
+  "secrets": {
+    "required": ["SWITCHBOT_TOKEN", "SWITCHBOT_SECRET", "MACKEREL_API_KEY"]
+  }
+}

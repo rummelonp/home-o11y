@@ -1,0 +1,6 @@
+allowBuilds:
+  # postinstall で git フックを登録する
+  lefthook: true
+  # wrangler と @cloudflare/vitest-plugin が使う。postinstall でプラットフォーム別のバイナリを確かめる
+  esbuild: true
+  workerd: true
