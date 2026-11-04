@@ -20,6 +20,7 @@ pnpm db:migrate    # 手元の D1 に migration を適用する
 テストごとに空の D1 へ migration を適用し直す（`src/test/setup.ts`）。
 SwitchBot と Mackerel への通信は、`vi.spyOn(globalThis, "fetch")` で差し替えて確かめる。
 `vitest.config.ts` の bindings はテスト用の値で、手元の `.dev.vars` を上書きする。
+`scripts/` は Node で実行するので、そのテストも workerd ではなく Node で動かす（`vitest.config.ts` の `scripts` のプロジェクト）。
 
 ## 変えるときに揃える箇所
 

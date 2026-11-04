@@ -12,15 +12,15 @@ HTTP リクエストは受けず、`scheduled` ハンドラーだけを実装す
 - `src/mackerel.ts`、`src/store.ts`: Mackerel への投稿と D1 への保存
 - `src/config.ts`: `SWITCHBOT_DEVICES` の解析
 - `migrations/`: D1 の migration
-- `scripts/`: `deploy.env` からのデプロイ用の設定の生成（`deploy-config.mjs`、`deploy.mjs`）と、SwitchBot の deviceId を調べるスクリプト
+- `scripts/`: `deploy.env` からのデプロイ用の設定の生成（`deploy-config.mjs`、`deploy.mjs`）、SwitchBot の deviceId を調べるスクリプト（`switchbot-devices.mjs`）、Mackerel の監視を作るスクリプト（`mackerel-monitors.mjs`）
 
 ## ドキュメント
 
 該当する作業のときに読む。
 
 - [docs/development.md](./docs/development.md): コマンド、テストの仕組み、変えるときに揃える箇所。コードを変える前に読む
-- [docs/deploy.md](./docs/deploy.md): 初回のセットアップ、更新、secret の入れ替え、デバイスの追加、手元で動かす手順
-- [docs/design.md](./docs/design.md): 発火 1 回の流れと失敗の扱い、値の形とメトリック名の規則、D1 のテーブル、取得元ごとに拾う項目
+- [docs/deploy.md](./docs/deploy.md): 初回のセットアップ、Mackerel の監視、更新、secret の入れ替え、デバイスの追加、手元で動かす手順
+- [docs/design.md](./docs/design.md): 発火 1 回の流れと失敗の扱い、値の形とメトリック名の規則、Mackerel のダッシュボードと監視、D1 のテーブル、取得元ごとに拾う項目
 
 ## 外部への書き込み
 
@@ -30,6 +30,7 @@ Cloudflare のアカウント、Mackerel、SwitchBot API に作用するコマ�
 - Cloudflare のアカウントを変える wrangler のコマンド（`deploy`、`d1 create`、`d1 execute --remote`、`d1 migrations apply --remote`、`secret`、`delete`、`rollback`、`login` など）と、それを呼ぶ `pnpm deploy:remote`、`pnpm db:migrate:remote`
 - `pnpm dev` での Cron の発火（`/__scheduled`）。`.dev.vars` の値で SwitchBot API を呼び、本番の Mackerel のサービス `home` に投稿する
 - `scripts/switchbot-devices.mjs`。書き込みはしないが、SwitchBot API の 1 日の呼び出し回数の上限を消費する
+- `scripts/mackerel-monitors.mjs`。Mackerel の監視を作り、同じ名前の既存の監視を上書きする（`--dry-run` は読むだけ）
 
 デプロイを頼まれても `wrangler deploy` は直接実行せず、`pnpm deploy:remote` を使う。
 直接実行すると、wrangler が新しい D1 を作り、`wrangler.jsonc` に書き込む。

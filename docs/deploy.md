@@ -70,6 +70,17 @@
      --command "SELECT * FROM readings ORDER BY measured_at DESC LIMIT 20"
    ```
 
+9. 監視を作る（中身は [design.md](./design.md) の「Mackerel のダッシュボードと監視」）。
+   Mackerel に投稿済みのメトリック名から定義を作るので、手順 8 で値が入ってから実行する。
+   `--dry-run` を付けると、作る定義を表示するだけで書き込まない。
+
+   ```bash
+   op run --env-file=.env.op -- node scripts/mackerel-monitors.mjs
+   ```
+
+   1Password を使わないなら、`MACKEREL_API_KEY` を環境変数に入れて `node scripts/mackerel-monitors.mjs` を実行する。
+   ダッシュボードは Mackerel の画面で作る。
+
 この Worker は Cron Trigger を 1 本使う。
 Workers の Free プランでは、Cron Trigger はアカウント全体で 5 本までである。
 
@@ -117,6 +128,11 @@ pnpm exec wrangler secret put MACKEREL_API_KEY --config wrangler.deploy.json
 `deploy.env` の `SWITCHBOT_DEVICES` を書き換えて、`pnpm deploy:remote` を実行する。
 場所の名前を変えると、Mackerel では別のメトリックになり、D1 では別の `location` の行になる。
 変える前の値は前の名前のまま残る。
+
+デプロイしたら、新しい名前の値が Mackerel に 1 回入るのを待ってから、`scripts/mackerel-monitors.mjs` を実行し直す（初回のセットアップの手順 9）。
+スクリプトは新しい名前の場所の監視を作り、同じ名前の既存の監視を上書きする。
+ダッシュボードの数値ウィジェットは、Mackerel の画面で足す（グラフウィジェットには自動で並ぶ）。
+前の名前の監視は消えずに残り、スクリプトが古い監視の名前を表示するので、要らなければ Mackerel の画面で消す。
 
 ## 手元で動かす
 

@@ -8,6 +8,6 @@ Mackerel のメトリック名は `<種類>.<場所>`（`temperature.living`、`
 
 ## ドキュメント
 
-- [docs/deploy.md](./docs/deploy.md): 初回のセットアップ、更新、secret の入れ替え、デバイスの追加、手元で動かす手順
-- [docs/design.md](./docs/design.md): 発火 1 回の流れと失敗の扱い、値の形とメトリック名の規則、D1 のテーブル、取得元ごとに拾う項目
+- [docs/deploy.md](./docs/deploy.md): 初回のセットアップ、Mackerel の監視、更新、secret の入れ替え、デバイスの追加、手元で動かす手順
+- [docs/design.md](./docs/design.md): 発火 1 回の流れと失敗の扱い、値の形とメトリック名の規則、Mackerel のダッシュボードと監視、D1 のテーブル、取得元ごとに拾う項目
 - [docs/development.md](./docs/development.md): 開発のコマンド、テストの仕組み、変えるときに揃える箇所
