@@ -1,7 +1,8 @@
 # home-o11y
 
 家のセンサーの値を 5 分ごとに読み、Mackerel のサービスメトリックに投稿しつつ、Cloudflare D1 に貯める Worker。
-Mackerel の Free プランはグラフを 1 日分しか表示しないので、長い期間の値は D1 から取り出す。
+Mackerel のグラフで見られる期間はプランで決まる（Free プランは 1 日）ので、期間に関係なく値を残せるよう D1 にも保存する。
+D1 の値を読む画面やコードはまだ無く、今は `wrangler d1 execute` で SQL を実行して読む（[docs/deploy.md](./docs/deploy.md) の初回のセットアップの手順 8）。
 
 今の取得元は SwitchBot API v1.1 で、温度、湿度、CO2、電池の残量、照度を拾う。
 Mackerel のメトリック名は `<種類>.<場所>`（`temperature.living`、`co2.room` など）になる。
