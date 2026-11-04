@@ -7,8 +7,10 @@ node_modules/
 # デプロイ先ごとの値と、そこから合成した wrangler の設定（scripts/deploy-config.mjs）
 deploy.env
 wrangler.deploy.json
-# 初回のデプロイで --secrets-file に渡す secret
+# 初回のデプロイで --secrets-file に渡す secret（docs/deploy.md の初回のセットアップ）
 deploy.secrets.env
+# 1Password の op:// の参照（docs/deploy.md の 1Password から secret を渡す）
+.env.op
 
 # AI エージェントの作業用ファイル
 .claude/plans/

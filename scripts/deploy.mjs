@@ -12,7 +12,9 @@ import { writeGeneratedConfig } from "./deploy-config.mjs";
 export const HELP = `usage:
   pnpm deploy:remote [-- <wrangler deploy の引数>]
   pnpm db:migrate:remote [-- <wrangler d1 migrations apply の引数>]
-  node scripts/deploy.mjs config      合成した設定を wrangler.deploy.json に書くだけで終わる`;
+  node scripts/deploy.mjs config      合成した設定を wrangler.deploy.json に書くだけで終わる
+
+初回のセットアップの手順は docs/deploy.md にある。`;
 
 /**
  * wrangler deploy の引数。deploy.env に ID があるので、リソースの自動作成は止める。
