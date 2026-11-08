@@ -89,5 +89,11 @@ export async function fetchDeviceReadings(
   if (readings.length === 0) {
     throw new Error(`SwitchBot ${device.location}: status に測定値がありません`);
   }
+  // SwitchBot は statusCode 100 のまま温度、湿度などを 0 にして返すことがある。
+  // 0 を投稿するとグラフと監視が実際の変化と見分けられないので、その台の値は捨てて抜けにする。
+  // 温度の 0 ℃ はありうるが、湿度 0 % は実際の環境では起きないので、これで見分ける。
+  if (readings.some((reading) => reading.kind === "humidity" && reading.value === 0)) {
+    throw new Error(`SwitchBot ${device.location}: 湿度が 0 の status は測定の失敗として捨てます`);
+  }
   return readings;
 }

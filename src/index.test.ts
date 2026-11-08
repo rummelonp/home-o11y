@@ -27,6 +27,8 @@ function mockFetch(
     failDevice?: string;
     htmlDevice?: string;
     serverErrorDevice?: string;
+    zeroDevice?: string;
+    freezingDevice?: string;
     mackerelStatus?: number;
   } = {},
 ): Captured & { mackerelBodies: () => Promise<unknown[]> } {
@@ -43,6 +45,14 @@ function mockFetch(
       }
       if (deviceId === options.failDevice) {
         return Response.json({ statusCode: 190, message: "device internal error", body: {} });
+      }
+      if (deviceId === options.zeroDevice) {
+        const body = { ...STATUSES[deviceId], temperature: 0, humidity: 0, CO2: 0, battery: 0 };
+        return Response.json({ statusCode: 100, message: "success", body });
+      }
+      if (deviceId === options.freezingDevice) {
+        const body = { ...STATUSES[deviceId], temperature: 0 };
+        return Response.json({ statusCode: 100, message: "success", body });
       }
       return Response.json({ statusCode: 100, message: "success", body: STATUSES[deviceId] });
     }
@@ -152,6 +162,31 @@ describe("scheduled", () => {
     mockFetch({ htmlDevice: "OUT000000001" });
     await expect(runScheduled()).rejects.toThrow(/balcony: 応答が JSON ではありません/);
     expect(await storedRows()).toHaveLength(7);
+  });
+
+  it("成功の statusCode で湿度が 0 の台は、0 を投稿・保存せず失敗にする", async () => {
+    const fetched = mockFetch({ zeroDevice: "CO2000000001" });
+    await expect(runScheduled()).rejects.toThrow(/room: 湿度が 0 の status/);
+
+    const [metrics] = await fetched.mackerelBodies();
+    expect(metrics).toHaveLength(6);
+    const rows = await storedRows();
+    expect(rows.map((row) => row.location)).not.toContain("room");
+    expect(rows).toHaveLength(6);
+  });
+
+  it("湿度が 0 でなければ、温度の 0 は正しい値として投稿・保存する", async () => {
+    const fetched = mockFetch({ freezingDevice: "OUT000000001" });
+    await runScheduled();
+
+    const [metrics] = await fetched.mackerelBodies();
+    expect(metrics).toContainEqual({ name: "temperature.balcony", time: MEASURED_AT, value: 0 });
+    expect(await storedRows()).toContainEqual({
+      location: "balcony",
+      kind: "temperature",
+      measured_at: MEASURED_AT,
+      value: 0,
+    });
   });
 
   it("同じ発火を再実行しても行は増えない", async () => {
